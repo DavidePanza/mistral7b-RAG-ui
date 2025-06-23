@@ -1,7 +1,4 @@
-
 torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
 transformers==4.40.0
+autoawq==0.2.3  # AMD64-optimized quantization
 accelerate==0.29.2
-bitsandbytes==0.43.0
-huggingface-hub==0.22.2
-sentencepiece==0.2.0
