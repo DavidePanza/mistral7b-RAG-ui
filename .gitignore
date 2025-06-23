@@ -1,0 +1,13 @@
+notes.md
+sentence_bert_train_compact.ipynb
+first_exploration.ipynb
+Notes.docx
+files/
+data/
+trash/
+notebooks/
+database/
+src/chromadb_data/
+src/__pycache__/
+src/chroma_exp.py
+demo_video.mp4
