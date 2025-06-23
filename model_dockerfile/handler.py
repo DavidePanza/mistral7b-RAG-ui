@@ -1,54 +1,25 @@
 import runpod
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
+from autoawq import AutoAWQForCausalLM
 import torch
 import os
 
-# Find the correct model path in cache
 def find_model_path():
-    base_cache = "/models"
-    
-    # Look for the AWQ model directory
-    for root, dirs, files in os.walk(base_cache):
-        if "TheBloke" in root and "Mistral-7B-Instruct-v0.1-AWQ" in root:
-            # Find the snapshot directory
-            if "snapshots" in root and os.listdir(root):
-                snapshot_dir = os.path.join(root, os.listdir(root)[0])
-                if os.path.exists(os.path.join(snapshot_dir, "config.json")):
-                    return snapshot_dir
-    
-    # Fallback: look for any model with config.json
-    for root, dirs, files in os.walk(base_cache):
+    for root, dirs, files in os.walk("/models"):
         if "config.json" in files:
             return root
-    
     return None
 
-MODEL_PATH = find_model_path()
-
 def load_model():
-    if not MODEL_PATH:
-        available_paths = []
-        for root, dirs, files in os.walk("/models"):
-            if files:
-                available_paths.append(root)
-        raise RuntimeError(f"Model not found. Available paths: {available_paths}")
+    model_path = find_model_path()
+    if not model_path:
+        raise RuntimeError("Model not found in /models")
     
-    if not torch.cuda.is_available():
-        raise RuntimeError("CUDA is not available - GPU required")
-
-    print(f"Loading model from: {MODEL_PATH}")
+    print(f"Loading AWQ 4-bit model from: {model_path}")
     
-    # Load AWQ model with proper configuration
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_PATH,
-        device_map="auto",
-        torch_dtype=torch.float16,
-        trust_remote_code=True,
-        use_safetensors=True
-    )
-    
+    # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
-        MODEL_PATH,
+        model_path,
         trust_remote_code=True
     )
     
@@ -56,8 +27,22 @@ def load_model():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     
+    # Load AWQ quantized model
+    model = AutoAWQForCausalLM.from_quantized(
+        model_path,
+        device_map="auto",
+        fuse_layers=True,
+        trust_remote_code=True,
+        safetensors=True
+    )
+    
+    print("✅ AWQ 4-bit model loaded successfully!")
+    print(f"Model device: {model.device}")
+    print(f"Model dtype: {model.dtype}")
+    
     return model, tokenizer
 
+# Load model at startup
 model, tokenizer = load_model()
 
 def handler(job):
@@ -73,6 +58,7 @@ def handler(job):
         # Format prompt for Mistral Instruct
         formatted_prompt = f"<s>[INST] {prompt} [/INST]"
         
+        # Tokenize input
         input_ids = tokenizer(
             formatted_prompt, 
             return_tensors="pt",
@@ -80,6 +66,7 @@ def handler(job):
             max_length=2048
         ).to(model.device)
         
+        # Generate response
         with torch.no_grad():
             outputs = model.generate(
                 **input_ids,
@@ -98,9 +85,9 @@ def handler(job):
         
         return {
             "response": response.strip(),
-            "model": "Mistral-7B-Instruct-v0.1-AWQ",
+            "model": "Mistral-7B-AWQ-4bit",
             "device": str(model.device),
-            "model_path": MODEL_PATH
+            "memory_usage_gb": torch.cuda.memory_allocated() / 1024**3 if torch.cuda.is_available() else 0
         }
         
     except Exception as e:
