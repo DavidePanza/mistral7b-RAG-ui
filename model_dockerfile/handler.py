@@ -36,7 +36,7 @@ def load_model():
         safetensors=True
     )
     
-    print("✅ AWQ 4-bit model loaded successfully!")
+    print("AWQ 4-bit model loaded successfully!")
     print(f"Model device: {model.device}")
     print(f"Model dtype: {model.dtype}")
     
