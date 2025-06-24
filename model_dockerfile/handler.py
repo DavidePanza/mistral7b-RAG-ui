@@ -59,6 +59,7 @@ def load_model():
 # Load model at startup
 model, tokenizer = load_model()
 
+
 def handler(job):
     try:
         inputs = job["input"]
@@ -69,12 +70,9 @@ def handler(job):
         if not prompt:
             return {"error": "Empty prompt provided"}
         
-        # Format prompt for Mistral Instruct
-        formatted_prompt = f"<s>[INST] {prompt} [/INST]"
-        
         # Tokenize input
         input_ids = tokenizer(
-            formatted_prompt, 
+            prompt, 
             return_tensors="pt",
             truncation=True,
             max_length=2048
