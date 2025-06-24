@@ -3,6 +3,7 @@ import os
 from utils import load_background_image, configure_page, breaks, file_uploader, load_uploaded_files, save_uploaded_files, remove_file_and_vectors 
 from mylogging import configure_logging, toggle_logging, display_logs
 from collections_setup import initialize_chromadb, initialize_collection, update_collection, get_database_directory
+from src.runpod_setup import get_relevant_text, generate_answer, get_contextual_prompt
 
 if __name__ == "__main__":
 
@@ -122,13 +123,6 @@ if __name__ == "__main__":
                     remove_file_and_vectors(file_name, collection, UPLOADED_FILES_LOG, database_dir)
 
     # ---- Response Generation ----
-    # Ollama server details
-
-    # At the beginning of your app
-    if not is_ollama_running(BASE_URL, logger):
-        st.error("Ollama server is not running. Please start it with 'ollama serve' before continuing.")
-        st.stop()
-
     # Streamlit UI
     breaks(1)
     st.divider()
@@ -155,7 +149,7 @@ if __name__ == "__main__":
 
             with st.spinner("Generating response..."):
                 context_query = get_contextual_prompt(query, relevant_text)
-                response, _ = generate_answer(BASE_URL, MODEL, context_query)
+                response, _ = generate_answer(context_query, max_tokens=150)
 
             with col2:
                 st.subheader("Response:")
