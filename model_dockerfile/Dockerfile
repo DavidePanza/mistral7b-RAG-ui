@@ -20,9 +20,8 @@ RUN pip install --no-cache-dir --timeout 1000 --retries 5 -r requirements-builde
 ARG HF_TOKEN
 ENV HF_TOKEN=$HF_TOKEN
 
-# Authenticate with Hugging Face (if token is provided)
+# Authenticate with Hugging Face (huggingface_hub already installed via requirements)
 RUN if [ -n "$HF_TOKEN" ]; then \
-        pip install huggingface_hub && \
         python3 -c "from huggingface_hub import login; login(token='$HF_TOKEN')"; \
     fi
 
