@@ -1,10 +1,15 @@
 import runpod
-from transformers import AutoTokenizer
-from autoawq import AutoAWQForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 import os
 
 def find_model_path():
+    # First check for quantized model
+    quantized_path = "/models/quantized_model"
+    if os.path.exists(quantized_path) and os.path.exists(os.path.join(quantized_path, "config.json")):
+        return quantized_path
+    
+    # Fallback to searching for original model
     for root, dirs, files in os.walk("/models"):
         if "config.json" in files:
             return root
@@ -15,7 +20,15 @@ def load_model():
     if not model_path:
         raise RuntimeError("Model not found in /models")
     
-    print(f"Loading AWQ 4-bit model from: {model_path}")
+    print(f"Loading 4-bit quantized model from: {model_path}")
+    
+    # Configure 4-bit quantization
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=True,
+        bnb_4bit_compute_dtype=torch.float16,
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_quant_type="nf4"
+    )
     
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
@@ -27,18 +40,19 @@ def load_model():
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     
-    # Load AWQ quantized model
-    model = AutoAWQForCausalLM.from_quantized(
+    # Load model with 4-bit quantization
+    model = AutoModelForCausalLM.from_pretrained(
         model_path,
+        quantization_config=quantization_config,
         device_map="auto",
-        fuse_layers=True,
         trust_remote_code=True,
-        safetensors=True
+        torch_dtype=torch.float16
     )
     
-    print("AWQ 4-bit model loaded successfully!")
+    print("4-bit quantized model loaded successfully!")
     print(f"Model device: {model.device}")
     print(f"Model dtype: {model.dtype}")
+    print(f"Memory usage: {torch.cuda.memory_allocated() / 1024**3:.2f} GB")
     
     return model, tokenizer
 
@@ -85,7 +99,7 @@ def handler(job):
         
         return {
             "response": response.strip(),
-            "model": "Mistral-7B-AWQ-4bit",
+            "model": "Mistral-7B-4bit-BitsAndBytes",
             "device": str(model.device),
             "memory_usage_gb": torch.cuda.memory_allocated() / 1024**3 if torch.cuda.is_available() else 0
         }

@@ -3,8 +3,6 @@ import os
 from utils import load_background_image, configure_page, breaks, file_uploader, load_uploaded_files, save_uploaded_files, remove_file_and_vectors 
 from mylogging import configure_logging, toggle_logging, display_logs
 from collections_setup import initialize_chromadb, initialize_collection, update_collection, get_database_directory
-from ollama_setup import is_ollama_running, get_relevant_text, generate_answer, get_contextual_prompt
-import warnings 
 
 if __name__ == "__main__":
 
@@ -125,8 +123,6 @@ if __name__ == "__main__":
 
     # ---- Response Generation ----
     # Ollama server details
-    BASE_URL = "http://127.0.0.1:11434/api"
-    MODEL = "llama3.2:1b"
 
     # At the beginning of your app
     if not is_ollama_running(BASE_URL, logger):
