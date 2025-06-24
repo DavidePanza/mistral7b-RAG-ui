@@ -16,6 +16,16 @@ RUN apt-get update && \
 COPY requirements-builder.txt .
 RUN pip install --no-cache-dir --timeout 1000 --retries 5 -r requirements-builder.txt
 
+# Add Hugging Face authentication
+ARG HF_TOKEN
+ENV HF_TOKEN=$HF_TOKEN
+
+# Authenticate with Hugging Face (if token is provided)
+RUN if [ -n "$HF_TOKEN" ]; then \
+        pip install huggingface_hub && \
+        python3 -c "from huggingface_hub import login; login(token='$HF_TOKEN')"; \
+    fi
+
 # Copy and run model download script
 COPY download_model.py .
 RUN python3 download_model.py
