@@ -1,7 +1,4 @@
-torch==2.2.2 --index-url https://download.pytorch.org/whl/cu121
-transformers==4.40.0
-bitsandbytes==0.43.1
-accelerate==0.29.2
+# Requirements for downloading pre-quantized models (CPU-only build)
 huggingface_hub>=0.20.0
-safetensors>=0.4.2
+transformers>=4.34.0
 numpy<2.0

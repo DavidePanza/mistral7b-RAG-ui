@@ -1,51 +1,119 @@
 #!/usr/bin/env python3
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
-import torch
+import subprocess
 import os
+import logging
+import sys
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def run_command(cmd):
+    """Run a shell command and log output"""
+    logger.info(f"Running: {cmd}")
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    
+    if result.stdout:
+        logger.info(f"STDOUT: {result.stdout}")
+    if result.stderr:
+        logger.warning(f"STDERR: {result.stderr}")
+    
+    if result.returncode != 0:
+        raise RuntimeError(f"Command failed with code {result.returncode}: {cmd}")
+    
+    return result
 
 def main():
-    model_name = "mistralai/Mistral-7B-Instruct-v0.1"
-    cache_dir = "/models"
+    model_name = "TheBloke/Mistral-7B-Instruct-v0.1-GPTQ"
+    model_dir = "/models/Mistral-7B-Instruct-v0.1-GPTQ"
     
-    print(f"Downloading and quantizing model: {model_name}")
+    logger.info(f"Downloading pre-quantized model: {model_name}")
+    logger.info("Using huggingface-cli for reliable download (CPU-only, no GPU needed)")
     
-    # Configure 4-bit quantization
-    quantization_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_compute_dtype=torch.float16,
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_quant_type="nf4"
+    # Create models directory
+    os.makedirs("/models", exist_ok=True)
+    
+    # Remove existing directory if it exists
+    if os.path.exists(model_dir):
+        logger.info(f"Removing existing directory: {model_dir}")
+        run_command(f"rm -rf {model_dir}")
+    
+    # Create the model directory
+    run_command(f"mkdir -p {model_dir}")
+    
+    # Download using huggingface-cli (much more reliable than Python API)
+    download_cmd = (
+        f"huggingface-cli download {model_name} "
+        f"--local-dir {model_dir} "
+        f"--local-dir-use-symlinks False"
     )
     
-    # Download and cache tokenizer
-    print("Downloading tokenizer...")
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name,
-        cache_dir=cache_dir,
-        trust_remote_code=True
-    )
+    try:
+        logger.info("Starting download with huggingface-cli...")
+        run_command(download_cmd)
+        logger.info("✓ Model download completed successfully!")
+        
+    except Exception as e:
+        logger.error(f"Download failed: {e}")
+        logger.info("Trying fallback download with specific branch...")
+        
+        # Try with specific branch as fallback
+        fallback_cmd = (
+            f"huggingface-cli download {model_name} "
+            f"--revision gptq-4bit-32g-actorder_True "
+            f"--local-dir {model_dir} "
+            f"--local-dir-use-symlinks False"
+        )
+        
+        try:
+            run_command(fallback_cmd)
+            logger.info("✓ Fallback download completed successfully!")
+        except Exception as e2:
+            logger.error(f"Fallback download also failed: {e2}")
+            raise RuntimeError("Both primary and fallback downloads failed")
     
-    # Download model files (this will cache the original model files)
-    print("Downloading model files...")
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        cache_dir=cache_dir,
-        quantization_config=quantization_config,
-        device_map="auto",
-        trust_remote_code=True,
-        torch_dtype=torch.float16
-    )
+    # Verify download
+    logger.info("Verifying downloaded files...")
+    if os.path.exists(model_dir):
+        files = os.listdir(model_dir)
+        logger.info(f"Downloaded files: {files}")
+        
+        # Check for required files
+        required_files = ["config.json", "tokenizer.json", "quantize_config.json"]
+        missing_files = []
+        
+        for file in required_files:
+            if file in files:
+                logger.info(f"✓ {file} found")
+            else:
+                missing_files.append(file)
+                logger.warning(f"⚠ {file} not found")
+        
+        # Check for model weight files
+        weight_files = [f for f in files if f.endswith(('.safetensors', '.bin'))]
+        if weight_files:
+            logger.info(f"✓ Model weights found: {weight_files}")
+        else:
+            logger.warning("⚠ No model weight files found")
+        
+        # Create marker file with model info
+        marker_file = "/models/downloaded_model.txt"
+        with open(marker_file, "w") as f:
+            f.write(f"{model_name}\n")
+            f.write(f"local_path: {model_dir}\n")
+            f.write(f"files: {', '.join(files)}\n")
+        
+        logger.info(f"✓ Model marker created: {marker_file}")
+        
+        if missing_files:
+            logger.warning(f"Some files missing: {missing_files}")
+        else:
+            logger.info("✓ All required files present!")
+            
+    else:
+        raise RuntimeError(f"Model directory not found: {model_dir}")
     
-    print("Model downloaded and quantized successfully!")
-    print(f"Model device: {model.device}")
-    print(f"Memory usage: {torch.cuda.memory_allocated() / 1024**3:.2f} GB")
-    
-    # Save the quantized model to disk for faster loading
-    print("Saving quantized model...")
-    model.save_pretrained(f"{cache_dir}/quantized_model")
-    tokenizer.save_pretrained(f"{cache_dir}/quantized_model")
-    
-    print("Quantized model saved successfully!")
+    logger.info("Pre-quantized model download completed successfully!")
+    logger.info("Model ready for GPU loading at runtime")
 
 if __name__ == "__main__":
     main()
