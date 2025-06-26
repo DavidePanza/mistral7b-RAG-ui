@@ -13,16 +13,14 @@ if __name__ == "__main__":
     breaks(2)
     st.write(
         """
-    Welcome to this Streamlit app that demonstrates how to integrate the Retrieval-Augmented Generation (RAG) 
-    model with Ollama models and ChromaDB on a local machine.
+    Welcome to this Streamlit app that demonstrates Retrieval-Augmented Generation (RAG) using a **Mistral-7B model hosted on Runpod** and **ChromaDB** for retrieval.
 
     With this app, you can:
-    - Upload multiple text files to build a contextual knowledge base,
-    - Enter a custom prompt to generate a response, and
-    - Generate a response using the RAG model.
+    - Upload multiple PDF or text files to build a contextual knowledge base,
+    - Ask custom questions based on your uploaded documents, and
+    - Generate informed responses using a lightweight, hosted LLM.
 
-    **Note:** This app is served by a Mistral-7B model hosted on Runpod and uses Streamlit with ChromaDB for RAG.  
-    Please be aware that **all uploaded content and embeddings are stored in memory only** and will be **lost once the app is closed or restarted**. 
+    **Note:** All uploaded files and generated embeddings are stored **in memory only** and will be **lost when the app is closed or restarted**. No data is persisted between sessions.
     """
     )
     

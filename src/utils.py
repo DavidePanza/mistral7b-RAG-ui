@@ -47,7 +47,7 @@ def load_background_image():
     """
     Loads and displays a background image with an overlaid title.
     """
-    image_path = "../images/image1.jpg"  
+    image_path = "../images/image6.jpg"  
     base64_image = get_base64_encoded_image(image_path)
     
     # Inject CSS for the background and title overlay
@@ -61,10 +61,10 @@ def load_background_image():
             background-size: container;
             background-position: center;
             height: 250px;  /* Adjust the height of the background */
-            width: 70%;
+            width: 100%;
             margin: 0 auto;
-            filter: contrast(110%) brightness(200%); /* Dim the brightness of the image */
-            border-radius: 200px;  /* Makes the container's corners rounded */
+            filter: contrast(110%) brightness(210%); /* Dim the brightness of the image */
+            border-radius: 100px;  /* Makes the container's corners rounded */
             overflow: hidden;  
         }}
 
@@ -76,7 +76,7 @@ def load_background_image():
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(20, 20, 20, 0.5); /* Semi-transparent black overlay */
+            background-color: rgba(20, 0, 20, 0.44); /* Semi-transparent black overlay */
             z-index: 1; /* Ensure the overlay is above the image */
         }}
 
@@ -86,10 +86,10 @@ def load_background_image():
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: white;   /* Title color */
-            font-size: 70px;
+            color: black;   /* Title color */
+            font-size: 60px;
             font-weight: bold;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Shadow for better visibility */
+            text-shadow: 1px 1px 3px rgba(255, 255, 255, .0); /* Shadow for better visibility */
             text-align: center;
             z-index: 2; /* Ensure the title is above the overlay */
         }}
@@ -102,7 +102,7 @@ def load_background_image():
     st.markdown(
         """
         <div class="bg-container">
-            <div class="overlay-title">Streamlit RAG</div>
+            <div class="overlay-title">Mistral-RAG Playground</div>
         </div>
         """,
         unsafe_allow_html=True
