@@ -21,14 +21,10 @@ if __name__ == "__main__":
     - Enter a custom prompt to generate a response, and
     - Generate a response using the RAG model.
 
-    **Note:** This app runs only on a local machine. It implements RAG with Ollama models using Streamlit and 
-    ChromaDB.  
-    Be aware that when you delete files, only the embeddings are removed, while the text chunks remain.  
-    Over time, this behavior can lead to an increase in the database size.  
-    To prevent excessive database growth, you may need to delete the existing database and instantiate a new one.
+    **Note:** This app is served by a Mistral-7B model hosted on Runpod and uses Streamlit with ChromaDB for RAG.  
+    Please be aware that **all uploaded content and embeddings are stored in memory only** and will be **lost once the app is closed or restarted**. 
     """
     )
-    breaks(1)
     
     # # Disable Chroma telemetry
     os.environ["CHROMA_TELEMETRY_ENABLED"] = "False"
@@ -46,10 +42,13 @@ if __name__ == "__main__":
         """,
         unsafe_allow_html=True,
     ) 
-    logging_level = st.selectbox("Select logging level", ['INFO', 'DEBUG', 'WARNING'], index=2)
-    toggle_logging(logging_level, logger)
     st.divider()
-    breaks(1)
+
+    # ---- Logging Setup ----
+    use_logging = False
+    if use_logging:
+        logging_level = st.selectbox("Select logging level", ['INFO', 'DEBUG', 'WARNING'], index=2)
+        toggle_logging(logging_level, logger)
 
     # ---- Vector Store Setup ----
     # Initialize ChromaDB and collection
@@ -66,11 +65,11 @@ if __name__ == "__main__":
             unsafe_allow_html=True
         )
         file_uploader()
-        breaks(1)
-        st.write(
-            "Uploaded files are processed to build a contextual knowledge base for the RAG model. "
-            "When you submit a prompt, the model retrieves relevant information from these documents to generate more accurate and context-aware responses."
-        )
+
+    st.html("""
+    Uploaded files are processed to build a contextual knowledge base for the RAG model.<br>
+    When you submit a prompt, the model retrieves relevant information from these documents to generate responses.
+    """)
 
     # Get the current uploaded filenames
     logger.debug(f"\n\t-- Currently uploaded files: {st.session_state.get('uploaded_files_name', 'None')}")
@@ -95,7 +94,6 @@ if __name__ == "__main__":
 
     # ---- Response Generation ----
     # Streamlit UI
-    breaks(1)
     st.divider()
     col1, _, col2 = st.columns([.6, .01, 1])
     with col1:
@@ -120,7 +118,7 @@ if __name__ == "__main__":
 
             with st.spinner("Generating response..."):
                 context_query = get_contextual_prompt(query, relevant_text)
-                response = generate_answer(context_query, max_tokens=150)
+                response = generate_answer(context_query, max_tokens=200)
 
             with col2:
                 st.subheader("Response:")
