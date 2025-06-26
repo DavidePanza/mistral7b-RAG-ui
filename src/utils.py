@@ -102,7 +102,7 @@ def load_background_image():
     st.markdown(
         """
         <div class="bg-container">
-            <div class="overlay-title">Mistral-RAG Playground</div>
+            <div class="overlay-title">Mistral-RAG</div>
         </div>
         """,
         unsafe_allow_html=True
