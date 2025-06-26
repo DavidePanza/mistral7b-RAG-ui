@@ -4,6 +4,14 @@ import sqlite3
 import base64
 
 
+DEFAULT_SESSION_STATE = {
+    # PDF Upload
+    'uploaded_files_name': [],
+    'collections_files_name': [],
+    'uploaded_files_raw': [],
+}
+
+
 def configure_page() -> None:
     """
     Configures the Streamlit page.
@@ -101,31 +109,96 @@ def load_background_image():
     )
 
 
-def file_uploader() -> None:
+def initialise_session_state():
     """
-    Uploads multiple files.
+    Initializes the session state variables if not already set.
     """
-    st.markdown(
-    """
-    <style>
-    /* This targets the file uploader container */
-    div[data-testid="stFileUploader"] {
-        margin-top: -30px !important;
-        margin-bottom: 0px !important;
-        max-width: 450px; /* adjust as needed */
-        padding: 10px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-    )
+    for key, default_val in DEFAULT_SESSION_STATE.items():
+        if key not in st.session_state:
+            st.session_state[key] = default_val
+
+
+# def file_uploader() -> None:
+#     """
+#     Uploads multiple files.
+#     """
+#     st.markdown(
+#     """
+#     <style>
+#     /* This targets the file uploader container */
+#     div[data-testid="stFileUploader"] {
+#         margin-top: -30px !important;
+#         margin-bottom: 0px !important;
+#         max-width: 450px; /* adjust as needed */
+#         padding: 10px;
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True,
+#     )
+#     uploaded_files = st.file_uploader(
+#         "",
+#         type=["txt", "pdf"], 
+#         accept_multiple_files=True  
+#     )
+    
+#     return uploaded_files
+
+
+def file_uploader():
     uploaded_files = st.file_uploader(
         "",
         type=["txt", "pdf"], 
-        accept_multiple_files=True  
-    )
+        accept_multiple_files=True)  
     
-    return uploaded_files
+    if uploaded_files:  # Check if list is not empty
+        for file in uploaded_files:  # Process each file
+            if file.name not in st.session_state.uploaded_files_name:
+                # Append to session state lists safely
+                st.session_state.uploaded_files_name.append(file.name)
+                st.session_state.uploaded_files_raw.append(file)
+                st.success(f"Added new file: {file.name}")
+   
+    else:
+        st.info("Please upload a PDF file to proceed.")
+
+
+# def upload_pdf():
+#     uploaded_file = st.file_uploader(
+#         "",
+#         type=["txt", "pdf"], 
+#         accept_multiple_files=True)  
+    
+#     if uploaded_file is not None:
+#         prev_file = st.session_state.get('uploaded_pdf_name', [])
+#         if uploaded_file.name not in prev_file:
+#             # New file detected
+#             reset_session_state_on_upload()
+#             st.session_state['pdf_changed'] = True
+#         else:
+#             st.session_state['pdf_changed'] = False
+
+#         pdf_bytes = uploaded_file.read()
+
+#         if pdf_bytes:
+#             st.session_state['uploaded_pdf_bytes'] = pdf_bytes
+#             st.session_state['uploaded_pdf_name'] = uploaded_file.name
+#             st.success(f"File '{uploaded_file.name}' uploaded successfully!")
+#         else:
+#             st.error("Uploaded file is empty!")
+                
+#     elif uploaded_file is None and st.session_state.get('uploaded_pdf_bytes') is not None:
+#         st.success("File uploaded successfully!")
+#     else:
+#         st.info("Please upload a PDF file to proceed.")
+
+
+def reset_session_state_on_upload():
+    """
+    Resets session state variables to their default values.
+    """
+    for key, default_val in DEFAULT_SESSION_STATE.items():
+        st.session_state[key] = default_val
 
 
 def load_uploaded_files(uploaded_files_log):

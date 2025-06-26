@@ -7,20 +7,44 @@ import sys
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def run_command(cmd):
+def run_command(cmd, show_progress=False):
     """Run a shell command and log output"""
     logger.info(f"Running: {cmd}")
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     
-    if result.stdout:
-        logger.info(f"STDOUT: {result.stdout}")
-    if result.stderr:
-        logger.warning(f"STDERR: {result.stderr}")
-    
-    if result.returncode != 0:
-        raise RuntimeError(f"Command failed with code {result.returncode}: {cmd}")
-    
-    return result
+    if show_progress:
+        # For long-running commands, show real-time output
+        process = subprocess.Popen(
+            cmd, 
+            shell=True, 
+            stdout=subprocess.PIPE, 
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1,
+            universal_newlines=True
+        )
+        
+        # Print output in real-time
+        for line in iter(process.stdout.readline, ''):
+            if line.strip():
+                logger.info(f"DOWNLOAD: {line.strip()}")
+        
+        process.wait()
+        if process.returncode != 0:
+            raise RuntimeError(f"Command failed with code {process.returncode}: {cmd}")
+            
+    else:
+        # For quick commands, capture all output
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        
+        if result.stdout:
+            logger.info(f"STDOUT: {result.stdout}")
+        if result.stderr:
+            logger.warning(f"STDERR: {result.stderr}")
+        
+        if result.returncode != 0:
+            raise RuntimeError(f"Command failed with code {result.returncode}: {cmd}")
+        
+        return result
 
 def main():
     model_name = "TheBloke/Mistral-7B-Instruct-v0.1-GPTQ"
@@ -35,10 +59,10 @@ def main():
     # Remove existing directory if it exists
     if os.path.exists(model_dir):
         logger.info(f"Removing existing directory: {model_dir}")
-        run_command(f"rm -rf {model_dir}")
+        run_command(f"rm -rf {model_dir}", show_progress=False)
     
     # Create the model directory
-    run_command(f"mkdir -p {model_dir}")
+    run_command(f"mkdir -p {model_dir}", show_progress=False)
     
     # Download using huggingface-cli (much more reliable than Python API)
     download_cmd = (
@@ -49,7 +73,11 @@ def main():
     
     try:
         logger.info("Starting download with huggingface-cli...")
-        run_command(download_cmd)
+        logger.info("This may take several minutes for a 7B model (~3-4GB)...")
+        logger.info("Download progress will be shown below:")
+        
+        # Use show_progress=True for the download command
+        run_command(download_cmd, show_progress=True)
         logger.info("✓ Model download completed successfully!")
         
     except Exception as e:
@@ -65,7 +93,8 @@ def main():
         )
         
         try:
-            run_command(fallback_cmd)
+            logger.info("Starting fallback download...")
+            run_command(fallback_cmd, show_progress=True)
             logger.info("✓ Fallback download completed successfully!")
         except Exception as e2:
             logger.error(f"Fallback download also failed: {e2}")
