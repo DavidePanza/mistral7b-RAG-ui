@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from utils import load_background_image, configure_page, breaks, file_uploader, initialise_session_state, load_uploaded_files, save_uploaded_files, remove_file_and_vectors 
+from utils import load_background_image, configure_page, breaks, file_uploader, initialise_session_state
 from mylogging import configure_logging, toggle_logging, display_logs
 from collections_setup import initialize_chromadb, initialize_collection, update_collection
 from runpod_setup import get_relevant_text, generate_answer, get_contextual_prompt
