@@ -1,10 +1,9 @@
-streamlit==1.22.0
-chromadb==0.4.14
-protobuf==3.20.3
-PyMuPDF
+streamlit
+chromadb
+sentence-transformers
 nltk
-sentence-transformers 
-ollama
-numpy==1.26
+PyMuPDF
+python-dotenv
+requests
 
 
