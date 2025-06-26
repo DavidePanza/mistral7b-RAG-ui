@@ -5,5 +5,5 @@ nltk
 PyMuPDF
 python-dotenv
 requests
-
+protobuf>=4.21.0
 
