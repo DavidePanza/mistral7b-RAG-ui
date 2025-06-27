@@ -60,7 +60,7 @@ def load_background_image():
             background-image: url("data:image/png;base64,{base64_image}");
             background-size: container;
             background-position: center;
-            height: 250px;  /* Adjust the height of the background */
+            height: 150px;  /* Adjust the height of the background */
             width: 100%;
             margin: 0 auto;
             filter: contrast(110%) brightness(210%); /* Dim the brightness of the image */
@@ -76,7 +76,7 @@ def load_background_image():
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(20, 0, 20, 0.44); /* Semi-transparent black overlay */
+            background-color: rgba(20, 10, 20, 0.44); /* Semi-transparent black overlay */
             z-index: 1; /* Ensure the overlay is above the image */
         }}
 
@@ -87,7 +87,7 @@ def load_background_image():
             left: 50%;
             transform: translate(-50%, -50%);
             color: black;   /* Title color */
-            font-size: 60px;
+            font-size: 50px;
             font-weight: bold;
             text-shadow: 1px 1px 3px rgba(255, 255, 255, .0); /* Shadow for better visibility */
             text-align: center;
