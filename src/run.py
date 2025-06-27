@@ -56,18 +56,16 @@ if __name__ == "__main__":
     collection = initialize_collection(client, embedding_func, collection_name)
 
     # Upload files
-    col1_, _, col2_ = st.columns([.4, .1, .5])
-    with col1_:
-        st.markdown(
-            '<h3>Drag and drop or click to upload multiple files:</h3>',
-            unsafe_allow_html=True
-        )
-        file_uploader()
-
+    st.markdown(
+    '<h3>Upload Files</h3>',
+    unsafe_allow_html=True)
     st.html("""
     Uploaded files are processed to build a contextual knowledge base for the RAG model.<br>
     When you submit a prompt, the model retrieves relevant information from these documents to generate responses.
     """)
+    col1_, _, col2_ = st.columns([.4, .1, .5])
+    with col1_:
+        file_uploader()
 
     # Get the current uploaded filenames
     logger.debug(f"\n\t-- Currently uploaded files: {st.session_state.get('uploaded_files_name', 'None')}")
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     st.divider()
     col1, _, col2 = st.columns([.6, .01, 1])
     with col1:
-        st.subheader("Enter your prompt:")
+        st.subheader("Enter your prompt")
         query = st.text_area("", height=200)
         generate_clicked = st.button("Generate Response")
     if generate_clicked:
