@@ -29,7 +29,7 @@ if __name__ == "__main__":
     
     # Initialize logger
     logger, log_stream = configure_logging()
-    st.markdown(
+    st.html(
         """
         <style>
         /* This targets the selectbox container */
@@ -37,9 +37,9 @@ if __name__ == "__main__":
             max-width: 150px;
         }
         </style>
-        """,
-        unsafe_allow_html=True,
-    ) 
+    #     """),
+    #     unsafe_allow_html=True,
+    # ) 
     st.divider()
 
     # ---- Logging Setup ----
