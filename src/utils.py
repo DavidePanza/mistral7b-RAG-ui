@@ -47,7 +47,22 @@ def load_background_image():
     """
     Loads and displays a background image with an overlaid title.
     """
-    image_path = "../images/image6.jpg"  
+    
+    possible_paths = [
+     "../images/image6.jpg",      # Local development (from src/ folder)
+     "images/image6.jpg",         # Docker container (from /app)
+    ]
+    
+    image_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            image_path = path
+            break
+    
+    if not image_path:
+        st.error("Could not find image6.jpg in any expected location")
+        return
+    
     base64_image = get_base64_encoded_image(image_path)
     
     # Inject CSS for the background and title overlay

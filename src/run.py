@@ -123,4 +123,5 @@ if __name__ == "__main__":
             logger.debug("No query provided; skipping relevant text retrieval.")
             st.warning("Please enter a prompt.")
 
-    display_logs(log_stream)
+    if use_logging:
+        display_logs(log_stream)
