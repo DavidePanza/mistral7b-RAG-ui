@@ -1,6 +1,5 @@
 # Ignore folders not needed in the image
 database/
-images/
 notebooks/
 trash/
 model_dockerfile/

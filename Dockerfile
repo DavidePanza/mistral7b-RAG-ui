@@ -4,9 +4,8 @@ WORKDIR /app
 
 COPY src/ ./src
 COPY requirements.txt .
-COPY images .
+COPY images/ ./images/ 
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "src/run.py"]
-
+CMD ["streamlit", "run", "src/run.py", "--server.port=8501", "--server.address=0.0.0.0"]
