@@ -1,0 +1,29 @@
+# Ignore folders not needed in the image
+database/
+images/
+notebooks/
+trash/
+model_dockerfile/
+
+# Ignore media and data files
+*.mp4
+*.bin
+*.sqlite3
+uploaded_files.txt
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore version control
+.git/
+.gitignore
+
+# Ignore documentation
+*.md
+
+# Ignore build/test artifacts
+*.log
+*.env
+.env.*
+.DS_Store
