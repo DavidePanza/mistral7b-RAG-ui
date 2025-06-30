@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-from utils import load_background_image, configure_page, breaks, file_uploader, initialise_session_state
+from utils import load_background_image, apply_style, configure_page, breaks, file_uploader, initialise_session_state
 from mylogging import configure_logging, toggle_logging, display_logs
 from collections_setup import initialize_chromadb, initialize_collection, update_collection
 from runpod_setup import get_relevant_text, generate_answer, get_contextual_prompt
@@ -8,6 +8,7 @@ from runpod_setup import get_relevant_text, generate_answer, get_contextual_prom
 if __name__ == "__main__":
 
     configure_page()
+    apply_style()
     load_background_image()
     initialise_session_state()
     breaks(2)

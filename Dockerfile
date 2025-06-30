@@ -5,6 +5,7 @@ WORKDIR /app
 COPY src/ ./src
 COPY requirements.txt .
 COPY images/ ./images/ 
+COPY .streamlit/ ./.streamlit/ 
 
 RUN pip install --no-cache-dir -r requirements.txt
 

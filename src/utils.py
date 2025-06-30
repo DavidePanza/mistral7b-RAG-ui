@@ -21,6 +21,34 @@ def configure_page() -> None:
                        page_icon=":rocket:")
 
 
+def apply_style():
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap');
+    html, body, .stApp,
+    .css-1v3fvcr, .css-ffhzg2, .css-1d391kg,
+    div[data-testid="stMarkdownContainer"],
+    div[data-testid="stText"],
+    div[data-testid="stTextInput"],
+    div[data-testid="stSelectbox"],
+    div[data-testid="stCheckbox"],
+    div[data-testid="stSlider"],
+    label, input, textarea, button, select,
+    .stButton, .stTextInput > div, .stMarkdown, .stCaption,
+    .streamlit-expanderHeader, .st-expander > div,
+    h1, h2, h3, h4, h5, h6,
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-family: 'Work Sans', sans-serif !important;
+    }
+    /* Ensure bold text uses the correct font weight */
+    strong, b, .stMarkdown strong, .stMarkdown b {
+        font-family: 'Work Sans', sans-serif !important;
+        font-weight: 700 !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 def breaks(n=1):
     """
     Creates a line break.
@@ -47,7 +75,7 @@ def load_background_image():
     """
     Loads and displays a background image with an overlaid title.
     """
-    
+
     possible_paths = [
      "../images/image6.jpg",      # Local development (from src/ folder)
      "images/image6.jpg",         # Docker container (from /app)
