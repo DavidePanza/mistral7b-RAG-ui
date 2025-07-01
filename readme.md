@@ -2,11 +2,6 @@
 
 ---
 
-### 🎥 Demo 
-![Demo GIF](https://github.com/DavidePanza/streamlit_RAG/blob/main/demo.gif)
-
----
-
 ## 📌 Overview
 This project implements a Retrieval-Augmented Generation (RAG) system powered by the Mistral 7B model quantized to 4-bit, hosted on Runpod. The frontend uses Streamlit for an easy-to-use UI and it is hosted on Hugging Face Spaces. This system is designed for users who want to quickly extract relevant information from their uploaded documents (.txt, .pdf).  
 You can upload files here to create a temporary knowledge base that helps the AI give you relevant answers.  
