@@ -97,6 +97,9 @@ def load_background_image():
     st.markdown(
         f"""
         <style>
+        /* Import Bitcount Grid Double font */
+        @import url('https://fonts.cdnfonts.com/css/bitcount-grid-double');
+        
         /* Background container with image */
         .bg-container {{
             position: relative;
@@ -115,7 +118,7 @@ def load_background_image():
         .bg-container::after {{
             content: '';
             position: absolute;
-            top: ;
+            top: 0;
             left: 0;
             width: 100%;
             height: 100%;
@@ -123,13 +126,14 @@ def load_background_image():
             z-index: 1; /* Ensure the overlay is above the image */
         }}
 
-        /* Overlay title styling */
+        /* Overlay title styling with Bitcount Grid Double font */
         .overlay-title {{
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             color: black;   /* Title color */
+            font-family: 'Bitcount Grid Double', 'Courier New', monospace !important;
             font-size: 50px;
             font-weight: bold;
             text-shadow: 1px 1px 3px rgba(255, 255, 255, .0); /* Shadow for better visibility */

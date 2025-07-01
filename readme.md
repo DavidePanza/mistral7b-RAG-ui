@@ -2,19 +2,23 @@
 
 ---
 
-## 📌 Overview
-This project implements a Retrieval-Augmented Generation (RAG) system powered by the Mistral 7B model quantized to 4-bit, hosted on Runpod. The frontend uses Streamlit for an easy-to-use UI and it is hosted on Hugging Face Spaces. This system is designed for users who want to quickly extract relevant information from their uploaded documents (.txt, .pdf).  
-You can upload files here to create a temporary knowledge base that helps the AI give you relevant answers.  
-**Note**: All uploaded documents and data are lost once the app is closed, ensuring your privacy and no persistent storage.
+## 📌 Overview  
+This project implements a Retrieval-Augmented Generation (RAG) system powered by the **Mistral 7B** model quantized to 4-bit, hosted on **Runpod**. The frontend uses **Streamlit** for a simple, accessible UI and is hosted on **Hugging Face Spaces**. It is designed for users who want to quickly extract meaningful information from uploaded documents (.txt, .pdf).  
 
-What this implementation does:
-- Lets you upload multiple text files to build a searchable knowledge base for the LLM.
-- Retrieves relevant information from your documents using RAG.
+You can upload files to create a **temporary knowledge base** that helps the AI generate accurate, document-aware responses.  
+
+Try the app here 👉 [Mistral RAG](https://huggingface.co/spaces/davidepanza/Mistral-RAG)
 
 ---
-```bash
-streamlit run src/run.py
-```
+
+## 🎯 Features
+
+- Upload multiple `.txt` or `.pdf` files to build a searchable knowledge base  
+- Retrieval-Augmented Generation (RAG) for grounding answers in your documents  
+- Easy-to-use Streamlit frontend hosted on Hugging Face Spaces  
+- Mistral 7B (4-bit) LLM hosted on Runpod for fast and affordable inference  
+- Real-time response generation based on uploaded content  
+- Lightweight and scalable—no database or backend server required  
 
 ---
 
